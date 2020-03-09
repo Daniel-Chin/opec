@@ -10,16 +10,32 @@
 <body>
 <h1>Auction Assistant</h1>
 <table id="table"></table>
-<br />
-<div id="valueDisplayContainer">
+<div id="tip">
+  * When a nation is sold off, click on the cell. 
+</div>
+
+<div id="valueDisplayContainer" class="displayContainer">
   <span>Scenario A</span>
-  <span id="valueDisplay"></span>
+  <span id="valueDisplay" class="centerAlign"></span>
   <span class="rightJust">Scenario B</span>
 </div>
 <div class="sliderContainer">
   <input 
     type="range" min="0" max="100" value="50" 
     class="slider" id="slider" 
+  />
+</div>
+<br />
+
+<div id="greedDisplayContainer" class="displayContainer">
+  <span>Rational</span>
+  <span id="greedDisplay" class="centerAlign"></span>
+  <span class="rightJust">Greedy</span>
+</div>
+<div class="sliderContainer">
+  <input 
+    type="range" min="0" max="100" value="40" 
+    class="slider" id="greeder" 
   />
 </div>
 </body>

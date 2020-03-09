@@ -1,9 +1,13 @@
+h1 {
+  font-size: 24px;
+}
+
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 table {
-  margin: 30px;
+  margin: 20px 20px 0;
 }
 
 #table, th {
@@ -14,6 +18,12 @@ table {
 
 #table th {
   padding: 5px 20px;
+} 
+
+.hoverGray {
+  cursor: pointer;
+} .hoverGray:hover {
+  background-color: #ddd;
 }
 
 .sliderContainer {
@@ -54,20 +64,32 @@ table {
   cursor: pointer; /* Cursor on hover */
 }
 
-#valueDisplayContainer {
+.displayContainer {
   width: 100%;
 }
 
-#valueDisplayContainer span {
+.displayContainer span {
   width: 33%;
   float: left;
 }
 
 #valueDisplay {
-  text-align: center;
   visibility: hidden;
 }
 
-#valueDisplayContainer .rightJust {
+.rightJust {
   text-align: right;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+#tip {
+  color: gray;
+  margin-bottom: 10px;
+}
+
+.sold {
+  background-color: greenyellow;
 }
