@@ -223,14 +223,35 @@ def retaliate():
   war = profit(Saudi, world_price, outputs[0])
   print('lose', (offend - war) / 10**6)
 
-f1()
-f2()
-f3()
-f4()
-allAgainstAll()
-nice()
-niceBC()
-nobody()
-bcOptim()
-f2BC()
-retaliate()
+def retaliateBC():
+  outputs = [
+    nation.capacity * OPTIM_BC
+    for nation in all_nations
+  ]
+  outputs[3] = Iraq.capacity
+  world_price = demandCurve(sum(outputs))
+  baseline = profit(Saudi, world_price, outputs[0])
+  outputs[0] = Saudi.capacity
+  world_price = demandCurve(sum(outputs))
+  offend = profit(Saudi, world_price, outputs[0])
+  gain = offend - baseline
+  print('gain', gain / 10**6)
+  outputs = [
+    nation.capacity
+    for nation in all_nations
+  ]
+  world_price = demandCurve(sum(outputs))
+  war = profit(Saudi, world_price, outputs[0])
+  print('lose', (offend - war) / 10**6)
+
+# f1()
+# f2()
+# f3()
+# f4()
+# allAgainstAll()
+# nice()
+# niceBC()
+# nobody()
+# bcOptim()
+# f2BC()
+retaliateBC()

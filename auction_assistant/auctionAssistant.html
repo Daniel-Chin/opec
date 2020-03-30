@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head id="head">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+h1 {
+  font-size: 24px;
+}
+
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+table {
+  margin: 20px 20px 0;
+}
+
+#table, th {
+  border: 1px solid;
+  border-collapse: collapse;
+  font-weight: normal;
+}
+
+#table th {
+  padding: 5px 20px;
+} 
+
+.hoverGray {
+  cursor: pointer;
+} .hoverGray:hover {
+  background-color: #ddd;
+}
+
+.sliderContainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.displayContainer {
+  width: 100%;
+}
+
+.displayContainer span {
+  width: 33%;
+  float: left;
+}
+
+#valueDisplay {
+  visibility: hidden;
+}
+
+.rightJust {
+  text-align: right;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+#tip {
+  color: gray;
+  margin-bottom: 10px;
+}
+
+.sold {
+  background-color: greenyellow;
+  cursor: pointer;
+}
+  </style>
+  <script>
+const NATIONS = ['Saudi', 'Iran', 'Venezuela', 'Iraq'];
+var scenario = null;
+var greed = null;
+var recommend = .4;
+const drift = .427;
+
+const generateTable = () => {
+  const table = document.getElementById('table');
+  const newRow = () => (document.createElement('tr'))
+  const newCell = () => (document.createElement('th'))
+  const first_row = newRow();
+  table.appendChild(first_row);
+  first_row.appendChild(newCell());
+  NATIONS.forEach((x) => {
+    const cell = newCell();
+    cell.innerHTML = x;
+    first_row.appendChild(cell);
+  });
+  [...'ABC'].forEach((x) => {
+    const row = newRow();
+    table.appendChild(row);
+    const nameCell = newCell();
+    row.appendChild(nameCell);
+    nameCell.innerHTML = 'Market ' + x;
+    NATIONS.forEach((nation) => {
+      const cell = newCell();
+      row.appendChild(cell);
+      cell.id = `cell-${x}-${nation}`;
+      if (! isNonStrategic(x, nation)) {
+        cell.classList.add('hoverGray');
+        cell.onclick = onClick.bind(null, cell, x, nation);
+      }
+    });
+  });
+};
+
+const onSlider = ({ target }) => {
+  document.getElementById('valueDisplay').innerHTML = target.value;
+  scenario = target.value / 100;
+  updateValuation();
+};
+
+const onGreeder = ({ target }) => {
+  greed = target.value / 100;
+  updateGreedDisplay();
+  updateValuation();
+};
+
+const formatPercent = (value) => (
+  `${Math.round(value * 100)}%`
+);
+
+const updateGreedDisplay = () => {
+  const d = document.getElementById('greedDisplay');
+  d.innerHTML = `${formatPercent(greed)} (Recommend ${formatPercent(recommend)})`;
+};
+
+window.onload = () => {
+  generateTable();
+  const slider = document.getElementById("slider");
+  slider.oninput = onSlider;
+  onSlider({ target: slider });
+  const greeder = document.getElementById("greeder");
+  greeder.oninput = onGreeder;
+  onGreeder({ target: greeder });
+};
+
+const DATA = {
+  A:   [ 3768, 521, 386, 100 ], 
+  B:   [ 3791, 522, 389, 100 ], 
+  BBC: [ 3748, 502, 367, null ], 
+};
+
+const updateValuation = () => {
+  const twoSides = {
+    A: ['A', 'B'], 
+    B: ['A', 'BBC'], 
+    C: ['A', 'BBC'], 
+  };
+  const mask = [1 - scenario, scenario];
+  [...'ABC'].forEach((market) => {
+    NATIONS.forEach((nation, j) => {
+      const cell = document.getElementById(
+        `cell-${market}-${nation}`
+      );
+      if (cell.classList.contains('sold')) return;
+      if (isNonStrategic(market, nation)) {
+        cell.innerHTML = 'N/A';
+        return;
+      }
+      let value = twoSides[market].map((scene, i) => (
+        DATA[scene][j] * mask[i]
+      )).reduce((x, y) => (x + y));
+      value = value * (1 - greed) + 100 * greed;
+      cell.innerHTML = value.toFixed(0);
+    });
+  });
+};
+
+const onClick = (cell, market, nation) => {
+  const saved_greed = greed;
+  greed = 0;
+  updateValuation();
+  const ref_price = parseInt(cell.innerHTML);
+  greed = saved_greed;
+  updateValuation();
+  const op = prompt(`Market ${market} ${nation} sold at:`, ref_price);
+  if (op === null) return;
+  const price = parseInt(op);
+  cell.innerHTML = price;
+  cell.classList.remove('hoverGray');
+  cell.classList.add('sold');
+  const this_greed = 1 - (price - 100) / (ref_price - 100);
+  recommend = recommend * (1 - drift) + this_greed * drift;
+  recommend = Math.max(0, recommend);
+  updateGreedDisplay();
+};
+
+const isNonStrategic = (market, nation) => (
+  market !== 'A' && nation === 'Iraq'
+);
+  </script>
+  <title>Auction Assistant</title>
+</head>
+<body>
+<h1>Auction Assistant</h1>
+<table id="table"></table>
+<div id="tip">
+  * When a nation is sold off, click on the cell. 
+</div>
+
+<div id="valueDisplayContainer" class="displayContainer">
+  <span>Scenario A</span>
+  <span id="valueDisplay" class="centerAlign"></span>
+  <span class="rightJust">Scenario B</span>
+</div>
+<div class="sliderContainer">
+  <input 
+    type="range" min="0" max="100" value="50" 
+    class="slider" id="slider" 
+  />
+</div>
+<br />
+
+<div id="greedDisplayContainer" class="displayContainer">
+  <span>Rational</span>
+  <span id="greedDisplay" class="centerAlign"></span>
+  <span class="rightJust">Greedy</span>
+</div>
+<div class="sliderContainer">
+  <input 
+    type="range" min="0" max="100" value="40" 
+    class="slider" id="greeder" 
+  />
+</div>
+</body>
+</html>

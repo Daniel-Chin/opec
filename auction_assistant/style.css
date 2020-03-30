@@ -92,4 +92,5 @@ table {
 
 .sold {
   background-color: greenyellow;
+  cursor: pointer;
 }
