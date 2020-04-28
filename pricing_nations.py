@@ -244,6 +244,21 @@ def retaliateBC():
   war = profit(Saudi, world_price, outputs[0])
   print('lose', (offend - war) / 10**6)
 
+def colabMargin():
+    result = []
+    for rate in [1, OPTIM_BC]:
+        outputs = [rate * nation.capacity for nation in all_nations]
+        outputs[3] = Iraq.capacity
+        outputs[2] = Venezuela.capacity
+        outputs[1] = Iran.capacity
+        world_price = demandCurve(sum(outputs))
+        result.append(
+            profit(Iran, world_price, outputs[1])
+        +
+            profit(Venezuela, world_price, outputs[2])
+        )
+    print((result[1] - result[0]) / 1000000)
+
 # f1()
 # f2()
 # f3()
@@ -254,4 +269,21 @@ def retaliateBC():
 # nobody()
 # bcOptim()
 # f2BC()
-retaliateBC()
+# retaliateBC()
+#colabMargin()
+#input()
+
+def oneRound():
+    outputs = [
+      nation.capacity
+      for nation in all_nations
+    ]
+    world_price = demandCurve(sum(outputs))
+    money = ([
+      (nation.name, profit(nation, world_price, q) / 10**6) 
+      for nation, q in zip(all_nations, outputs)
+    ])
+    for offset in (-.75, 0, .25, 1.25):
+        [print(money[i][0], money[i][1] * offset) for i in range(4)]
+
+oneRound()

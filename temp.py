@@ -142,7 +142,7 @@ def main(conservative = False):
         factual = profit(nation, price, q)
         delta = factual - aim
         player_score.append(player_score[-1] + delta)
-    score = [[round(y / 1000000) + 1430 for y in x] for x in score]
+    score = [[round(y / 1000000) + 1430-1722.5+1408 for y in x] for x in score]
     # from console import console
     # console({**locals(), **globals()})
     [plt.plot(range(N_ROUNDS + 1), x, label=all_nations[nation_i].name + ' ' + market) for x, (market, nation_i) in zip(score, all_players)]
