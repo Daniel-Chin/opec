@@ -259,19 +259,18 @@ def colabMargin():
         )
     print((result[1] - result[0]) / 1000000)
 
-# f1()
-# f2()
-# f3()
-# f4()
-# allAgainstAll()
-# nice()
-# niceBC()
-# nobody()
-# bcOptim()
-# f2BC()
-# retaliateBC()
-#colabMargin()
-#input()
+f1()
+f2()
+f3()
+f4()
+allAgainstAll()
+nice()
+niceBC()
+nobody()
+bcOptim()
+f2BC()
+retaliateBC()
+colabMargin()
 
 def oneRound():
     outputs = [
@@ -287,3 +286,4 @@ def oneRound():
         [print(money[i][0], money[i][1] * offset) for i in range(4)]
 
 oneRound()
+input()
